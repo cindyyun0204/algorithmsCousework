@@ -18,7 +18,7 @@ def determinant_orientation(p, q, r):
     else:
         return 2
 
-def javis_march(points,n):
+def jarvis_march(points,n):
     n = len(points)
     if n < 3:
         return
@@ -36,6 +36,11 @@ def javis_march(points,n):
             break
     return convex_hull
 
-points = [(0, 3), (2, 2), (1, 1), (2, 1), (3, 0), (0, 0), (3, 3)]
-new = javis_march(points, len(points))
-print(new)
+def main():
+    points = [(0, 3), (2, 2), (1, 1), (2, 1), (3, 0), (0, 0), (3, 3)]
+    new = jarvis_march(points, len(points))
+    print(new)
+
+
+if __name__ == "__main__":
+    main()
