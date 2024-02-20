@@ -9,13 +9,6 @@ def left_most_index(points):
     return first_index
 
 def determinant_orientation(p, q, r):
-    '''
-    To find orientation of ordered triplet (p, q, r).
-    The function returns following values
-    0 --> p, q and r are collinear
-    1 --> Clockwise
-    2 --> Counterclockwise
-    '''
     val = (q[1] - p[1]) * (r[0] - p[0]) - (q[0] - p[0]) * (r[1] - p[1])
 
     if val == 0:
