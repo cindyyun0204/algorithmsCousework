@@ -1,6 +1,9 @@
 import random
 import math
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from time import sleep
+
 def grahams_scan(points):
     # def random_points(n):
     #     return [(random.random(), random.random()) for i in range(n)]
@@ -44,7 +47,24 @@ def grahams_scan(points):
         while len(stack) > 1 and cross_product(stack[-2], stack[-1], p) <= 0:
             stack.pop()
         stack.append(p)
+    stack.append(sorted_points[0]) # added the starting point again to close the convex hull
     return stack
+
+def plot_points(points, hull): # need to figure out where to put this function
+    x = [p[0] for p in points]
+    y = [p[1] for p in points]
+    hull_x = [p[0] for p in hull]
+    hull_y = [p[1] for p in hull]
+
+    plt.title("Graham's Scan")
+    plt.xlabel("x-axis")
+    plt.ylabel("y-axis")
+    plt.scatter(x, y, 25, color = "black")  # points are size 25
+    plt.plot(hull_x, hull_y, color = "red")
+    plt.show()
 
 points = [(0,0),(1,1),(3,2),(1,5),(0.5,5),(-1,3),(-0.5,2),(3,3.5),(8,-1)]
 print(grahams_scan(points))
+hull = grahams_scan(points)
+
+plot_points(points, hull)
