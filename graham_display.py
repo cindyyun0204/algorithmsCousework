@@ -61,12 +61,12 @@ def graham_scan(points = None, randomize = True, plot = True):
         stack.append(p)
         if plot:
             ax.clear()
-            ax.scatter([x[0] for x in points], [x[1] for x in points], color="black")  # All other points - black
-            ax.scatter(p0[0], p0[1], color="blue")  # Starting point - blue
-            ax.scatter([x[0] for x in stack[1:]], [x[1] for x in stack[1:]], color="green")  # points in the stack - green
+            ax.scatter([x[0] for x in points], [x[1] for x in points], 10, color="black")  # All other points - black
+            ax.scatter(p0[0], p0[1], 10, color="blue")  # Starting point - blue
+            ax.scatter([x[0] for x in stack[1:]], [x[1] for x in stack[1:]], 10, color="green")  # points in the stack - green
             if i < len(points) - 1:
-                ax.scatter(points[i + 1][0], points[i + 1][1], color="red")  # The next point - red
-            ax.plot([x[0] for x in stack] + [stack[0][0]], [x[1] for x in stack] + [stack[0][1]], color="green")
+                ax.scatter(points[i + 1][0], points[i + 1][1], 10, color="red")  # The next point - red
+            ax.plot([x[0] for x in stack] + [stack[0][0]], [x[1] for x in stack] + [stack[0][1]], 10, color="green")
             plt.pause(0.01)
     stack.append(p0)
     
