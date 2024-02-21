@@ -21,7 +21,7 @@ def determinant_orientation(p, q, r):
     else:
         return 2
 
-def jarvis_march(points,n):
+def jarvis_march(points):
     n = len(points)
     if n < 3:
         return
@@ -29,7 +29,7 @@ def jarvis_march(points,n):
     convex_hull = []
     p = first
     while True:
-        convex_hull.append(p)
+        convex_hull.append(points[p])
         q = (p + 1) % n
         for r in range(n):
             if determinant_orientation(points[p], points[q], points[r]) == 2:
@@ -59,10 +59,8 @@ def plot_points(points, hull):
 def main():
     # points = [(0, 3), (2, 2), (1, 1), (2, 1), (3, 0), (0, 0), (3, 3)]
     points = random_points(100)
-    new = jarvis_march(points, len(points))
-    new_points = [points[i] for i in new]
-    print(new_points)
-    plot_points(points, new_points)
+    print(jarvis_march(points))
+    plot_points(points, jarvis_march(points))
     
 if __name__ == "__main__":
     main()

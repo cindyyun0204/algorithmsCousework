@@ -6,19 +6,19 @@ import timeit
 from time import sleep
 
 def graham_scan(points = None, randomize = True, plot = True):
-    points = []
+    pts = []
 
     def random_points(n):
         for i in range(n):
-            points.append((random.randint(0, 100), random.randint(0, 100)))
-        return points
+            pts.append((random.randint(0, 100), random.randint(0, 100)))
+        return pts
     
     if randomize:
-        random_points(100)
+        pts = random_points(100)
     else:
-        points = points
+        pts = points
 
-    def sort(points):
+    def sort(pts):
         def compare_angles(p1, p2):
             angle1 = math.atan2(p1[1] - p0[1], p1[0] - p0[0])
             angle2 = math.atan2(p2[1] - p0[1], p2[0] - p0[0])
@@ -37,35 +37,35 @@ def graham_scan(points = None, randomize = True, plot = True):
                 pi = partition(arr, low, high)
                 quicksort(arr, low, pi - 1)
                 quicksort(arr, pi + 1, high)
-        if len(points) < 3:
-            return points
-        p0 = min(points, key=lambda p: p[0])
-        points.remove(p0)
-        quicksort(points, 0, len(points) - 1)
-        points.insert(0, p0)
-        return points
+        if len(pts) < 3:
+            return pts
+        p0 = min(pts, key=lambda p: p[0])
+        pts.remove(p0)
+        quicksort(pts, 0, len(pts) - 1)
+        pts.insert(0, p0)
+        return pts
     
-    points = sort(points)
-    p0 = points[0]
-
-    fig, ax = plt.subplots()
+    pts = sort(pts)
+    p0 = pts[0]
+    if plot:
+        fig, ax = plt.subplots()
 
     stack = []
 
     def cross_product(p1, p2, p3):
         return (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0])
 
-    for i, p in enumerate(points):
+    for i, p in enumerate(pts):
         while len(stack) > 1 and cross_product(stack[-2], stack[-1], p) <= 0:
             stack.pop()
         stack.append(p)
         if plot:
             ax.clear()
-            ax.scatter([x[0] for x in points], [x[1] for x in points], 10, color="black")  # All other points - black
+            ax.scatter([x[0] for x in pts], [x[1] for x in pts], 10, color="black")  # All other points - black
             ax.scatter(p0[0], p0[1], 10, color="blue")  # Starting point - blue
             ax.scatter([x[0] for x in stack[1:]], [x[1] for x in stack[1:]], 10, color="green")  # points in the stack - green
-            if i < len(points) - 1:
-                ax.scatter(points[i + 1][0], points[i + 1][1], 10, color="red")  # The next point - red
+            if i < len(pts) - 1:
+                ax.scatter(pts[i + 1][0], pts[i + 1][1], 10, color="red")  # The next point - red
             ax.plot([x[0] for x in stack] + [stack[0][0]], [x[1] for x in stack] + [stack[0][1]], 10, color="green")
             plt.pause(0.01)
     stack.append(p0)
@@ -73,6 +73,7 @@ def graham_scan(points = None, randomize = True, plot = True):
     if plot:
         plt.tight_layout()
         plt.show()
+    stack.pop()
     return stack
 
-graham_scan()
+# graham_scan()
