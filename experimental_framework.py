@@ -1,73 +1,64 @@
 import timeit
 import matplotlib.pyplot as plt
-import random
 from chan import chans_algorithm
 from graham_display import graham_scan
 from jarvis_march import jarvis_march
 from data_generation import DataGeneration
 
-class ExperimentalFramework():
-    def __init__(self, num_points):
-        self.num_points = num_points
-        self.x_range = (0,32767) # should we still keep the x_range and y_range parameters in DataGeneration?
-        self.y_range = (0,32767)
-        self.points = []
-        self.graham_scan_times = []
-        self.jarvis_march_times = []
-        self.chans_algorithm_times = []
+class ExperimentalFramework:
+    def __init__(self, n_range, h_range, x_range, y_range):
+        self.n_range = n_range
+        self.h_range = h_range
+        self.x_range = x_range
+        self.y_range = y_range
+        self.results = []
 
-    def run_jarvis(self, points):
-        return jarvis_march(points, False)
-    
-    def run_graham(self, points):
-        return graham_scan(points, False)
-    
-    def run_chans(self, points):
-        return chans_algorithm(points, False)
-    
-    def time_algorithms(self, num_points):
-        data_gen = DataGeneration(num_points, self.x_range, self.y_range)
-        points = data_gen.random_points() # basic case, might need a parameter to choose which type of points to generate
+    def run_experiment(self):
+        for n in self.n_range:
+            for h in self.h_range:
+                data_gen = DataGeneration(self.x_range, self.y_range)
+                points = data_gen.generate_points(n, h)
+                chans_time, graham_time, jarvis_time = self.time_algorithms(points)
+                self.results.append((n, h, chans_time, graham_time, jarvis_time))
 
-        start = timeit.default_timer()
-        self.run_chans(points)
-        chans_time = timeit.default_timer() - start
-
-        start = timeit.default_timer()
-        self.run_graham(points)
-        graham_time = timeit.default_timer() - start
-
-        start = timeit.default_timer()
-        self.run_jarvis(points)
-        jarvis_time = timeit.default_timer() - start
+    def time_algorithms(self, points):
+        jarvis_time = timeit.timeit(lambda: jarvis_march(points, plot=False), number=1)
+        graham_time = timeit.timeit(lambda: graham_scan(points, plot=False), number=1)
+        chans_time = timeit.timeit(lambda: chans_algorithm(points, plot=False), number=1)
 
         return chans_time, graham_time, jarvis_time
-    
+
+    # def plot_results(self):
+    #     h_values_set = set(h for _, h, _, _, _ in self.results)
+    #     for h in h_values_set:
+    #         plt.figure(figsize=(10, 6))
+    #         n_values, chans_times, graham_times, jarvis_times = zip(*[(n, ct, gt, jt) for n, h_val, ct, gt, jt in self.results if h_val == h])
+    #         plt.plot(n_values, chans_times, label='Chan\'s Algorithm')
+    #         plt.plot(n_values, graham_times, label='Graham\'s Scan')
+    #         plt.plot(n_values, jarvis_times, label='Jarvis\' March')
+    #         plt.xlabel('Number of Points (n)')
+    #         plt.ylabel('Time (seconds)')
+    #         plt.title(f'h = {h}')
+    #         plt.legend()
+    #     plt.show()
+
     def plot_results(self):
-        # show the coordinates, but looks messy
-        # plt.figure(figsize=(10, 6))
-        # for x, y in zip(self.num_points, self.chans_algorithm_times):
-        #     plt.annotate(f'({x}, {y:.2f})', (x, y))
-        # for x, y in zip(self.num_points, self.graham_scan_times):
-        #     plt.annotate(f'({x}, {y:.2f})', (x, y))
-        # for x, y in zip(self.num_points, self.jarvis_march_times):
-        #     plt.annotate(f'({x}, {y:.2f})', (x, y))
-        plt.plot(self.num_points, self.chans_algorithm_times, label='Chan\'s Algorithm')
-        plt.plot(self.num_points, self.graham_scan_times, label='Graham\'s Scan')
-        plt.plot(self.num_points, self.jarvis_march_times, label='Jarvis\' March')
-        plt.xlabel('Number of Points')
+        n_values, h_values, chans_times, graham_times, jarvis_times = zip(*self.results)
+        x_values = [f'{n}({h})' for n, h in zip(n_values, h_values)]
+        # print(x_values, chans_times, graham_times, jarvis_times)
+        plt.figure(figsize=(10, 6))
+        plt.plot(x_values, chans_times, label='Chan\'s Algorithm')
+        plt.plot(x_values, graham_times, label='Graham\'s Scan')
+        plt.plot(x_values, jarvis_times, label='Jarvis\' March')
+        plt.xlabel('Number of Points (n) and Hull Points (h) in the form n(h)')
         plt.ylabel('Time (seconds)')
         plt.legend()
+        plt.xticks(rotation=90)
+        plt.tight_layout()
         plt.show()
 
-    def run_experiments(self):
-        for num_points in self.num_points:
-            chans_time, graham_time, jarvis_time = self.time_algorithms(num_points)
-            self.chans_algorithm_times.append(chans_time)
-            self.graham_scan_times.append(graham_time)
-            self.jarvis_march_times.append(jarvis_time)
-        self.plot_results()
-
-num_points = range(100, 100000, 10000)
-framework = ExperimentalFramework(num_points)
-framework.run_experiments()
+framework = ExperimentalFramework([100,10000,20000,30000], [10,20,30,100], (0, 100), (0, 100))
+# gonna change into range() eventually
+# n_range, h_range, x_range, y_range
+framework.run_experiment()
+framework.plot_results()
