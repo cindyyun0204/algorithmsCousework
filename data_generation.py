@@ -14,7 +14,7 @@ class DataGeneration:
     def generate_points(self, n, h=0):
         if h == 0:
             self.random_points(n)
-        elif h > 3:
+        elif h >= 3:
             self.hull_points(n, h)
         else:
             raise ValueError("h must be greater than 3")
@@ -40,8 +40,22 @@ class DataGeneration:
         self.circle_points(h)
         self.hull = self.points.copy()
         while len(self.points) < n:
-            point = self.generate_points_inside_hull()
+            # swap these around depending on if we choose to use 
+            # random points in a box or within the whole convex hull
+            point = self.generate_random_points_in_box()
+            # point = self.generate_points_inside_hull()
             self.points.append(point)
+
+    def small_area_in_hull(self):
+        middle = (self.x_range[1] - self.x_range[0]) / 2
+        half_length = 5000
+        return (middle - half_length, middle + half_length)
+    
+    def generate_random_points_in_box(self):
+        length = self.small_area_in_hull()
+        x = random.randint(length[0], length[1])
+        y = random.randint(length[0], length[1])
+        return (x,y)
 
     def generate_points_inside_hull(self):
         while True:
