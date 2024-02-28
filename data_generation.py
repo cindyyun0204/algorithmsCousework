@@ -3,7 +3,7 @@ import math
 
 
 class DataGeneration:
-    def _init_(self, n, h, x_range, y_range, random=False, circle=False, hull=False):
+    def __init__(self, n, h, x_range, y_range, random=False, circle=False, hull=False, collinear=False):
         self.points = []
         self.hull = []
         self.n = n
@@ -13,6 +13,7 @@ class DataGeneration:
         # x and y ranges are tuples (a,b) from a to b
         self.random = random
         self.circle = circle
+        self.collinear = collinear
         self.hull = hull
 
     def random_points(self, n):
@@ -91,6 +92,8 @@ class DataGeneration:
             self.random_points(self.n)
         if self.circle:
             self.circle_points(self.n)
+        if self.collinear:
+            self.collinear_points()
         if self.hull:
             self.hull_points()
         return self.points
