@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from chan import chans_algorithm
 from graham_display import graham_scan
 from jarvis_march import jarvis_march
-from data_generation import DataGeneration
+from data_generation_convex_polygon import DataGeneration
 
 class ExperimentalFramework:
     def __init__(self, n_range, h_range, x_range, y_range):
@@ -17,7 +17,8 @@ class ExperimentalFramework:
         for n in self.n_range:
             for h in self.h_range:
                 data_gen = DataGeneration(self.x_range, self.y_range)
-                points = data_gen.generate_points(n, h)
+                hull = data_gen.generate_random_convex_polygon(h)
+                points = hull + data_gen.generate_points_inside_polygon(hull, n-h)
                 chans_time, graham_time, jarvis_time = self.time_algorithms(points)
                 self.results.append((n, h, chans_time, graham_time, jarvis_time))
 
@@ -25,7 +26,6 @@ class ExperimentalFramework:
         jarvis_time = timeit.timeit(lambda: jarvis_march(points, plot=False), number=1)
         graham_time = timeit.timeit(lambda: graham_scan(points, plot=False), number=1)
         chans_time = timeit.timeit(lambda: chans_algorithm(points, plot=False), number=1)
-
         return chans_time, graham_time, jarvis_time
 
     def plot_results(self):
@@ -57,7 +57,7 @@ class ExperimentalFramework:
     #     plt.tight_layout()
     #     plt.show()
 
-framework = ExperimentalFramework([30000,50000,100000,110000,120000,130000,150000], [10,30,1000], (1, 32767), (1, 32767))
+framework = ExperimentalFramework([3000,5000,7000,9000,11000,13000,16000,19000,25000,30000,50000,100000,110000,120000], [10,30,100], (0, 32767), (0, 32767))
 # gonna change into range() eventually
 # n_range, h_range, x_range, y_range
 framework.run_experiment()
