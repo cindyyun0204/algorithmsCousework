@@ -2,7 +2,7 @@ import random
 import math
 import matplotlib.pyplot as plt
 
-# from jarvis_march import jarvis_march
+from jarvis_march import jarvis_march
 
 class DataGeneration:
     def __init__(self, x_range, y_range):
@@ -78,11 +78,11 @@ class DataGeneration:
             p1 = p2
         return inside
 
-# generator = DataGeneration((0, 1000), (0, 1000))
-# points = generator.generate_points(1000000, 20)
-# hull = jarvis_march(points)
-# plt.scatter(*zip(*points), color='black')
-# hull.append(hull[0])
-# xs, ys = zip(*hull)
-# plt.plot(xs, ys, 'red', lw=2)
-# plt.show()
+generator = DataGeneration((1, 32767), (1, 32767))
+points = generator.generate_points(10000, 20)
+hull = jarvis_march(points)
+plt.scatter(*zip(*points), color='black')
+hull.append(hull[0])
+xs, ys = zip(*hull)
+plt.plot(xs, ys, 'red', lw=2)
+plt.show()

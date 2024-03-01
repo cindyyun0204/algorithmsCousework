@@ -41,7 +41,7 @@ def chans_algorithm(points = [], plot = True):
             else:
                 left = mid + 1
                 lprev = -mnext
-                lnext = orientation(p, subset[left], subset[(left + 1) % len(subset)])
+                lnext = orientation(p, subset[left], subset[(left + 1) % len(subset)]) - 1
         return subset[0]
 
     while True:
