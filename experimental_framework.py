@@ -1,6 +1,6 @@
 import timeit
 import matplotlib.pyplot as plt
-from chan import chans_algorithm
+from chanOld import chans_algorithm
 from graham_display import graham_scan
 from jarvis_march import jarvis_march
 from data_generation_convex_polygon import DataGeneration
@@ -13,14 +13,22 @@ class ExperimentalFramework:
         self.y_range = y_range
         self.results = []
 
-    def run_experiment(self):
+    def run_experiment(self, count=1):
         for n in self.n_range:
             for h in self.h_range:
                 data_gen = DataGeneration(self.x_range, self.y_range)
                 hull = data_gen.generate_random_convex_polygon(h)
                 points = hull + data_gen.generate_points_inside_polygon(hull, n-h)
-                chans_time, graham_time, jarvis_time = self.time_algorithms(points)
-                self.results.append((n, h, chans_time, graham_time, jarvis_time))
+                chans_times, graham_times, jarvis_times = [], [], []
+                for _ in range(count):
+                    chans_time, graham_time, jarvis_time = self.time_algorithms(points)
+                    chans_times.append(chans_time)
+                    graham_times.append(graham_time)
+                    jarvis_times.append(jarvis_time)
+                chans_mean = sum(chans_times) / count
+                graham_mean = sum(graham_times) / count
+                jarvis_mean = sum(jarvis_times) / count
+                self.results.append((n, h, chans_mean, graham_mean, jarvis_mean))
 
     def time_algorithms(self, points):
         jarvis_time = timeit.timeit(lambda: jarvis_march(points, plot=False), number=1)
@@ -34,14 +42,27 @@ class ExperimentalFramework:
             plt.figure(figsize=(10, 6))
             n_values, chans_times, graham_times, jarvis_times = zip(*[(n, ct, gt, jt) for n, h_val, ct, gt, jt in self.results if h_val == h])
             plt.plot(n_values, chans_times, label='Chan\'s Algorithm')
+            plt.scatter(n_values, chans_times, 5, color='black')
             plt.plot(n_values, graham_times, label='Graham\'s Scan')
+            plt.scatter(n_values, graham_times, 5, color='black')
             plt.plot(n_values, jarvis_times, label='Jarvis\' March')
+            plt.scatter(n_values, jarvis_times, 5, color='black')
             plt.xlabel('Number of Points (n)')
             plt.ylabel('Time (seconds)')
             plt.title(f'h = {h}')
             plt.legend()
         plt.show()
 
+    def print_results(self):
+        headers = ["n", "h", "Chan's Algorithm Time", "Graham's Scan Time", "Jarvis' March Time"]
+        data = self.results
+        lengths = [max(len(str(val)) for val in col) for col in zip(headers, *data)]
+        lengths = [max(len(headers[i]), lengths[i]) for i in range(len(lengths))]
+        row_format = "|".join(["{:<" + str(length) + "}" for length in lengths])
+        print(row_format.format(*headers))
+        for row in data:
+            print(row_format.format(*row))
+    
     # def plot_results(self):
     #     n_values, h_values, chans_times, graham_times, jarvis_times = zip(*self.results)
     #     x_values = [f'{n}({h})' for n, h in zip(n_values, h_values)]
@@ -57,8 +78,9 @@ class ExperimentalFramework:
     #     plt.tight_layout()
     #     plt.show()
 
-framework = ExperimentalFramework([3000,5000,7000,9000,11000,13000,16000,19000,25000,30000,50000,100000,110000,120000], [10,30,100], (0, 32767), (0, 32767))
+framework = ExperimentalFramework([100,1000,10000,100000], [3,10,100], (0, 32767), (0, 32767))
 # gonna change into range() eventually
 # n_range, h_range, x_range, y_range
-framework.run_experiment()
+framework.run_experiment(count = 5)
 framework.plot_results()
+framework.print_results()
