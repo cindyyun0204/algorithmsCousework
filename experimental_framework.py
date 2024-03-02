@@ -54,7 +54,7 @@ class ExperimentalFramework:
         plt.show()
 
     def print_results(self):
-        headers = ["n", "h", "Chan's Algorithm Time", "Graham's Scan Time", "Jarvis' March Time"]
+        headers = ["n", "h", "Chan's Algorithm Time", "Graham Scan Time", "Jarvis March Time"]
         data = self.results
         lengths = [max(len(str(val)) for val in col) for col in zip(headers, *data)]
         lengths = [max(len(headers[i]), lengths[i]) for i in range(len(lengths))]
