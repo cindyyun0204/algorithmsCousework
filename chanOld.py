@@ -16,17 +16,19 @@ def chans_algorithm(points = [], plot = True):
     if len(pts) == 0:
         pts = random_points(1000000)
 
-    m = max(1, int(math.sqrt(len(pts))))
+    m = int(math.sqrt(len(pts)))
     hull = []
+    t = 1
 
     while True:
+        t += 1
         subsets = [pts[i:i + m] for i in range(0, len(pts), m)]
         hulls = [graham_scan(points=subset, plot=False) for subset in subsets]
         flat_hulls = [point for hull in hulls for point in hull]
         hull = jarvis_march(pts=flat_hulls, plot=False)
         if len(hull) <= m:
             break
-        m *= 2
+        m = min(2**(2**t), len(pts))
 
         # with search_tangent and a jarivs-march-like approach based on paper's pesudocode, not efficient
         # while True:
