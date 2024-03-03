@@ -1,31 +1,22 @@
 import math
 import timeit
-
-import numpy as np
 from graham_display import graham_scan
-from jarvis_march import jarvis_march
 import matplotlib.pyplot as plt
 import random
 
 def chans_algorithm(points = [], plot = True):
-
     def random_points(n):
         for i in range(n):
             points.append((random.randint(0, 32767), random.randint(0, 32767)))
         return points
 
-    pts = points
-    if len(pts) == 0:
-        pts = random_points(1000000)
-
-    m = max(1, int(math.sqrt(len(pts))))
-    hull = []
-            
     def orientation(p, q, r):
         val = (q[0] - p[0])*(r[1] - p[1]) - (r[0] - p[0])*(q[1] - p[1])
         return (val > 0) - (val < 0)
 
     def search_tangent(subset, p):
+        if p in subset:
+            return subset[(subset.index(p) + 1) % len(subset)]
         left, right = 0, len(subset)
         lprev = orientation(p, subset[0], subset[-1])
         lnext = orientation(p, subset[0], subset[(left + 1) % right])
@@ -41,37 +32,67 @@ def chans_algorithm(points = [], plot = True):
             else:
                 left = mid + 1
                 lprev = -mnext
-                lnext = orientation(p, subset[left], subset[(left + 1) % len(subset)]) - 1
+                lnext = orientation(p, subset[left-1], subset[(left + 1) % len(subset)])
         return subset[0]
+    
+    pts = points
+    if len(pts) == 0:
+        pts = random_points(1000)
+
+    m = int(math.sqrt(len(pts)))
+    subsets = [pts[i:i + m] for i in range(0, len(pts), m)]
+    hulls = [graham_scan(subset, plot=False) for subset in subsets]
+    p0 = min(pts, key=lambda p: p[0])
+    final_hull = []
+    pthis = p0
+    if plot:
+        fig, ax = plt.subplots()
 
     while True:
-        subsets = [pts[i:i + m] for i in range(0, len(pts), m)]
-        hulls = [graham_scan(points=subset, plot=False) for subset in subsets]
-        point_on_hull = min(min(hulls), key=lambda p: p[0])
-        hull = [point_on_hull]
-        for _ in range(len(pts)):
-            next_points = [search_tangent(subset, point_on_hull) for subset in hulls]
-            next_point = max(next_points, key=lambda p: (p[0] - point_on_hull[0], p[1] - point_on_hull[1]))
-            if next_point == hull[0]:
-                break
-            hull.append(next_point)
-            point_on_hull = next_point
-        if len(hull) <= m:
+        if plot:
+            ax.clear()
+            for hull in hulls:
+                color = (random.random()/10, random.random()/10, random.random())
+                for i in range(len(hull)):
+                    ax.scatter(*hull[i], 10, color=color)
+                    ax.plot(*zip(*[hull[i-1], hull[i]]), color=color)
+                ax.plot(*zip(*[hull[-1], hull[0]]), color=color)
+        tangents = []
+        for hull in hulls:
+            tangent = search_tangent(hull, pthis)
+            tangents.append(tangent)
+        ax.scatter(*zip(*tangents), 10, color='red')
+        most_cw_tangent = tangents[0]
+        for i in range(1, len(tangents)):
+            if orientation(pthis, most_cw_tangent, tangents[i]) < 0:
+                most_cw_tangent = tangents[i]
+        pthis = most_cw_tangent
+        final_hull.append(most_cw_tangent)
+        ax.scatter(*most_cw_tangent, 10, color='yellow')
+        ax.plot(*zip(*final_hull, final_hull[0]), color='green')
+        for point in final_hull:
+            plt.scatter(*point, 10, color='green')
+        plt.pause(0.01)
+        if pthis == p0:
             break
-        m *= 2
+    plt.show()
+    return final_hull
+        
 
-    if plot:
-        x = [p[0] for p in pts]
-        y = [p[1] for p in pts]
-        hull_x = [p[0] for p in hull]
-        hull_y = [p[1] for p in hull]
-        plt.title("Chan's Algorithm")
-        plt.xlabel("x-axis")
-        plt.ylabel("y-axis")
-        plt.scatter(x, y, 10, color = "black")
-        plt.plot(hull_x, hull_y, color = "red")
-        plt.show()
-    return hull
+# def plot_results(P, hull):
+#     plt.scatter(*zip(*P), color='black')
+#     if hull:
+#         hull.append(hull[0])
+#         plt.plot(*zip(*hull), color='red')
+#     plt.show()
+
+# def random_points(n):  
+#     return [(random.randint(0, 32767), random.randint(0, 32767)) for i in range(n)]
+# P = random_points(1000)
+# m = 3
+# hull = chans_algorithm(P, m)
+# plot_results(P, hull)
+    
 
 # def generate_random_points(num_points):
 #     return [(random.randint(0, 32767), random.randint(0, 32767)) for _ in range(num_points)]
@@ -95,5 +116,4 @@ def chans_algorithm(points = [], plot = True):
 # start_point = (32767,0)
 # tangent_point = search_tangent(hull, start_point)
 # plot_points(points, hull, tangent_point, start_point)
-
-#chans_algorithm()
+chans_algorithm()
