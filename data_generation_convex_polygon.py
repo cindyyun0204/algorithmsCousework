@@ -98,6 +98,12 @@ class DataGeneration:
             if self.is_point_inside_polygon(x, y, polygon):
                 points_inside.append((x, y))
         return points_inside
+    
+    def generate_random_points(self, n):
+        points = []
+        for i in range(n):
+            points.append((random.randint(self.x_range[0], self.x_range[1]), random.randint(self.y_range[0], self.y_range[1])))
+        return points
 
 # # Example usage
 # n = 10  # Number of vertices in the polygon

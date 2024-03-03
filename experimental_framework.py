@@ -1,6 +1,6 @@
 import timeit
 import matplotlib.pyplot as plt
-from chanOld import chans_algorithm
+from chan import chans_algorithm
 from graham_display import graham_scan
 from jarvis_march import jarvis_march
 from data_generation_convex_polygon import DataGeneration
@@ -17,8 +17,11 @@ class ExperimentalFramework:
         for n in self.n_range:
             for h in self.h_range:
                 data_gen = DataGeneration(self.x_range, self.y_range)
-                hull = data_gen.generate_random_convex_polygon(h)
-                points = hull + data_gen.generate_points_inside_polygon(hull, n-h)
+                if h:
+                    hull = data_gen.generate_random_convex_polygon(h)
+                    points = hull + data_gen.generate_points_inside_polygon(hull, n-h)
+                else:
+                    points = data_gen.generate_random_points(n)
                 chans_times, graham_times, jarvis_times = [], [], []
                 for _ in range(count):
                     chans_time, graham_time, jarvis_time = self.time_algorithms(points)
@@ -43,9 +46,9 @@ class ExperimentalFramework:
             n_values, chans_times, graham_times, jarvis_times = zip(*[(n, ct, gt, jt) for n, h_val, ct, gt, jt in self.results if h_val == h])
             plt.plot(n_values, chans_times, label='Chan\'s Algorithm')
             plt.scatter(n_values, chans_times, 5, color='black')
-            plt.plot(n_values, graham_times, label='Graham\'s Scan')
+            plt.plot(n_values, graham_times, label='Graham Scan')
             plt.scatter(n_values, graham_times, 5, color='black')
-            plt.plot(n_values, jarvis_times, label='Jarvis\' March')
+            plt.plot(n_values, jarvis_times, label='Jarvis March')
             plt.scatter(n_values, jarvis_times, 5, color='black')
             plt.xlabel('Number of Points (n)')
             plt.ylabel('Time (seconds)')
@@ -78,9 +81,9 @@ class ExperimentalFramework:
     #     plt.tight_layout()
     #     plt.show()
 
-framework = ExperimentalFramework([100,1000,10000,100000], [3,10,100], (0, 32767), (0, 32767))
+framework = ExperimentalFramework([100000,200000,300000,400000,500000,1000000], [38], (0, 32767), (0, 32767))
 # gonna change into range() eventually
 # n_range, h_range, x_range, y_range
-framework.run_experiment(count = 5)
+framework.run_experiment(count = 1)
 framework.plot_results()
 framework.print_results()
