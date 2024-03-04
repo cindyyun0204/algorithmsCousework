@@ -37,13 +37,12 @@ def chans_algorithm(points = [], plot = True):
     
     pts = points
     if len(pts) == 0:
-        pts = random_points(1000000)
+        pts = random_points(100)
     n = len(pts)
-    m = 0
+    m = int(math.sqrt(n))
     while m < n:
-        m = int(math.sqrt(n))
         t = 1
-        subsets = [pts[i:i + m] for i in range(0, n, int(math.ceil(n/m)))]
+        subsets = [pts[i:i + m] for i in range(0, n, m)]
         hulls = [graham_scan(subset, plot=False) for subset in subsets]
         p0 = min(min(hulls), key=lambda p: p[0])
         final_hull = []
@@ -93,5 +92,5 @@ def chans_algorithm(points = [], plot = True):
         m = min(2**(2**t), len(pts))
     return "incomplete"
 
-print(len(chans_algorithm(plot=False)))
-print(timeit.timeit(lambda: chans_algorithm(plot=False), number=1))
+print(len(chans_algorithm()))
+# print(timeit.timeit(lambda: chans_algorithm(plot=False), number=1))
