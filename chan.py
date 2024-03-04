@@ -39,6 +39,7 @@ def chans_algorithm(points = [], plot = True):
     if len(pts) == 0:
         pts = random_points(1000000)
     n = len(pts)
+    m = 0
     while m < n:
         m = int(math.sqrt(n))
         t = 1
@@ -92,5 +93,5 @@ def chans_algorithm(points = [], plot = True):
         m = min(2**(2**t), len(pts))
     return "incomplete"
 
-# print(len(chans_algorithm(plot=False)))
+print(len(chans_algorithm(plot=False)))
 print(timeit.timeit(lambda: chans_algorithm(plot=False), number=1))
