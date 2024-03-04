@@ -3,6 +3,7 @@ import timeit
 from graham_display import graham_scan
 import matplotlib.pyplot as plt
 import random
+import data_generation_convex_polygon as dgp
 
 def chans_algorithm(points = [], plot = True):
     def random_points(n):
@@ -40,8 +41,9 @@ def chans_algorithm(points = [], plot = True):
         pts = random_points(100)
     n = len(pts)
     m = int(math.sqrt(n))
-    while m < n:
-        t = 1
+    t = 1
+    while True:
+        m = min(m, n)
         subsets = [pts[i:i + m] for i in range(0, n, m)]
         hulls = [graham_scan(subset, plot=False) for subset in subsets]
         p0 = min(min(hulls), key=lambda p: p[0])
@@ -90,7 +92,10 @@ def chans_algorithm(points = [], plot = True):
                 return final_hull
         t += 1
         m = min(2**(2**t), len(pts))
+        print(m)
     return "incomplete"
 
-print(len(chans_algorithm()))
+hull = dgp.DataGeneration(100, 100).generate_random_convex_polygon(32)
+points = hull + dgp.DataGeneration(100, 100).generate_points_inside_polygon(hull, 68)
+print(chans_algorithm(points))
 # print(timeit.timeit(lambda: chans_algorithm(plot=False), number=1))
