@@ -4,18 +4,17 @@ from chan import chans_algorithm
 from graham_display import graham_scan
 from jarvis_march import jarvis_march
 from data_generation_convex_polygon import DataGeneration
-import data_generation
 
 class ExperimentalFramework:
-    def __init__(self, n_range, h_range, x_range, y_range):
+    def __init__(self, n_range, h_range, x_range, y_range, c = True, g = True, j = True):
         self.n_range = n_range
         self.h_range = h_range
         self.x_range = x_range
         self.y_range = y_range
         self.results = []
-        self.include_chans = True
-        self.include_graham = False
-        self.include_jarvis = True
+        self.include_chans = c
+        self.include_graham = g
+        self.include_jarvis = j
 
     def time_algorithms(self, points):
         chans_time, graham_time, jarvis_time = None, None, None
@@ -51,18 +50,18 @@ class ExperimentalFramework:
                 jarvis_mean = sum(jarvis_times) / count if self.include_jarvis else None
                 self.results.append((n, h, chans_mean, graham_mean, jarvis_mean))
 
-    def plot_results(self, include_chans=True, include_graham=True, include_jarvis=True):
+    def plot_results(self):
         h_values_set = set(h for _, h, _, _, _ in self.results)
         for h in h_values_set:
             plt.figure(figsize=(10, 6))
             n_values, chans_times, graham_times, jarvis_times = zip(*[(n, ct, gt, jt) for n, h_val, ct, gt, jt in self.results if h_val == h])
-            if include_chans:
+            if self.include_chans:
                 plt.plot(n_values, chans_times, label='Chan\'s Algorithm')
                 plt.scatter(n_values, chans_times, 5, color='black')
-            if include_graham:
+            if self.include_graham:
                 plt.plot(n_values, graham_times, label='Graham Scan')
                 plt.scatter(n_values, graham_times, 5, color='black')
-            if include_jarvis:
+            if self.include_jarvis:
                 plt.plot(n_values, jarvis_times, label='Jarvis March')
                 plt.scatter(n_values, jarvis_times, 5, color='black')
             plt.xlabel('Number of Points (n)')
@@ -123,7 +122,7 @@ class ExperimentalFramework:
         chans_time = timeit.timeit(lambda: chans_algorithm(points, plot=False), number=1)
         return chans_time, graham_time
 
-    def plot_results(self):
+    def plot_resultss(self):
         h_values_set = set(h for _, h, _, _, _ in self.results)
         for h in h_values_set:
             plt.figure(figsize=(10, 6))
