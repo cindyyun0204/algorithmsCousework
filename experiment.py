@@ -68,123 +68,7 @@ class ExperimentalFramework:
             plt.ylabel('Time (seconds)')
             plt.title(f'h = {h}')
             plt.legend()
-        plt.show()
-                
-    def run_experiment_no_j(self, count=1):
-        for n in self.n_range:
-            print(n)
-            for h in self.h_range:
-                data_gen = DataGeneration(self.x_range, self.y_range)
-                if h:
-                    hull = data_gen.generate_random_convex_polygon(h)
-                    points = hull + data_gen.generate_points_inside_polygon(hull, n-h)
-                    # points = data_gen.generate_points(n, h)
-                else:
-                    points = data_gen.generate_random_points(n)
-                chans_times, graham_times, jarvis_times = [], [], []
-                for _ in range(count):
-                    chans_time, graham_time = self.time_algorithms_no_j(points)
-                    chans_times.append(chans_time)
-                    graham_times.append(graham_time)
-                chans_mean = sum(chans_times) / count
-                graham_mean = sum(graham_times) / count
-                self.results.append((n, h, chans_mean, graham_mean))
-
-    def run_experiment_op_no_j(self, count=1):
-        for h in self.h_range:
-            print(h)
-            for n in self.n_range:
-                chans_times, graham_times = [], []
-                for _ in range(count):
-                    data_gen = DataGeneration(self.x_range, self.y_range)
-                    if h:
-                        hull = data_gen.generate_random_convex_polygon(h)
-                        points = hull + data_gen.generate_points_inside_polygon(hull, n-h)
-                        # points = data_gen.generate_points(n, h)
-                    else:
-                        points = data_gen.generate_random_points(n)
-                    chans_time, graham_time = self.time_algorithms_no_j(points)
-                    chans_times.append(chans_time)
-                    graham_times.append(graham_time)
-                    print(chans_time/graham_time)
-                chans_mean = sum(chans_times) / count
-                graham_mean = sum(graham_times) / count
-                self.results.append((n, h, chans_mean, graham_mean))
-
-    # def time_algorithms(self, points):
-    #     jarvis_time = timeit.timeit(lambda: jarvis_march(points, plot=False), number=1)
-    #     graham_time = timeit.timeit(lambda: graham_scan(points, plot=False), number=1)
-    #     chans_time = timeit.timeit(lambda: chans_algorithm(points, plot=False), number=1)
-    #     return chans_time, graham_time, jarvis_time
-    
-    def time_algorithms_no_j(self, points):
-        graham_time = timeit.timeit(lambda: graham_scan(points, plot=False), number=1)
-        chans_time = timeit.timeit(lambda: chans_algorithm(points, plot=False), number=1)
-        return chans_time, graham_time
-
-    def plot_resultss(self):
-        h_values_set = set(h for _, h, _, _, _ in self.results)
-        for h in h_values_set:
-            plt.figure(figsize=(10, 6))
-            n_values, chans_times, graham_times, jarvis_times = zip(*[(n, ct, gt, jt) for n, h_val, ct, gt, jt in self.results if h_val == h])
-            plt.plot(n_values, chans_times, label='Chan\'s Algorithm')
-            plt.scatter(n_values, chans_times, 5, color='black')
-            plt.plot(n_values, graham_times, label='Graham Scan')
-            plt.scatter(n_values, graham_times, 5, color='black')
-            plt.plot(n_values, jarvis_times, label='Jarvis March')
-            plt.scatter(n_values, jarvis_times, 5, color='black')
-            plt.xlabel('Number of Points (n)')
-            plt.ylabel('Time (seconds)')
-            plt.title(f'h = {h}')
-            plt.legend()
-        plt.show()
-
-    def plot_results_no_j(self):
-        h_values_set = set(h for _, h, _, _ in self.results)
-        for h in h_values_set:
-            plt.figure(figsize=(10, 6))
-            n_values, chans_times, graham_times = zip(*[(n, ct, gt) for n, h_val, ct, gt in self.results if h_val == h])
-            plt.plot(n_values, chans_times, label='Chan\'s Algorithm')
-            plt.scatter(n_values, chans_times, 5, color='black')
-            plt.plot(n_values, graham_times, label='Graham Scan')
-            plt.scatter(n_values, graham_times, 5, color='black')
-            plt.xlabel('Number of Points (n)')
-            plt.ylabel('Time (seconds)')
-            plt.title(f'h = {h}')
-            plt.legend()
-        plt.show()
-
-    def plot_results_op(self):
-        n_values_set = set(n for n, _, _, _, _ in self.results)
-        for n in n_values_set:
-            plt.figure(figsize=(10, 6))
-            h_values, chans_times, graham_times, jarvis_times = zip(*[(h, ct, gt, jt) for n_val, h, ct, gt, jt in self.results if n_val == n])
-            plt.plot(h_values, chans_times, label='Chan\'s Algorithm')
-            plt.scatter(h_values, chans_times, 5, color='black')
-            plt.plot(h_values, graham_times, label='Graham Scan')
-            plt.scatter(h_values, graham_times, 5, color='black')
-            plt.plot(h_values, jarvis_times, label='Jarvis March')
-            plt.scatter(h_values, jarvis_times, 5, color='black')
-            plt.xlabel('Number of Hull Points (h)')
-            plt.ylabel('Time (seconds)')
-            plt.title(f'n = {n}')
-            plt.legend()
-        plt.show()
-
-    def plot_results_op_no_j(self):
-        n_values_set = set(n for n, _, _, _ in self.results)
-        for n in n_values_set:
-            plt.figure(figsize=(10, 6))
-            h_values, chans_times, graham_times = zip(*[(h, ct, gt) for n_val, h, ct, gt in self.results if n_val == n])
-            plt.plot(h_values, chans_times, label='Chan\'s Algorithm')
-            plt.scatter(h_values, chans_times, 5, color='black')
-            plt.plot(h_values, graham_times, label='Graham Scan')
-            plt.scatter(h_values, graham_times, 5, color='black')
-            plt.xlabel('Number of Hull Points (h)')
-            plt.ylabel('Time (seconds)')
-            plt.title(f'n = {n}')
-            plt.legend()
-        plt.show()
+        plt.show()    
 
     def print_results(self):
         headers = ["n", "h", "Chan's Algorithm Time", "Graham Scan Time", "Jarvis March Time"]
@@ -196,22 +80,8 @@ class ExperimentalFramework:
         for row in data:
             print(row_format.format(*row))
     
-    # def plot_results(self):
-    #     n_values, h_values, chans_times, graham_times, jarvis_times = zip(*self.results)
-    #     x_values = [f'{n}({h})' for n, h in zip(n_values, h_values)]
-    #     # print(x_values, chans_times, graham_times, jarvis_times)
-    #     plt.figure(figsize=(10, 6))
-    #     plt.plot(x_values, chans_times, label='Chan\'s Algorithm')
-    #     plt.plot(x_values, graham_times, label='Graham\'s Scan')
-    #     plt.plot(x_values, jarvis_times, label='Jarvis\' March')
-    #     plt.xlabel('Number of Points (n) and Hull Points (h) in the form n(h)')
-    #     plt.ylabel('Time (seconds)')
-    #     plt.legend()
-    #     plt.xticks(rotation=90)
-    #     plt.tight_layout()
-    #     plt.show()
-
 framework = ExperimentalFramework(range(1000,10000,1000), [50], (0, 30000), (0, 30000)) # 3
+# framework = ExperimentalFramework([50], range(1000,10000,1000), (0, 30000), (0, 30000))
 # framework = ExperimentalFramework([1000], range(5, 51, 5), (0,30000), (0,30000))
 # framework = ExperimentalFramework([10000], range(3,35,1), (0,30000), (0,30000))
 # gonna change into range() eventually
