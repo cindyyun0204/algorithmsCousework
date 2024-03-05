@@ -3,7 +3,6 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import timeit
-from time import sleep
 
 def graham_scan(points = [], plot = True):
     pts = []

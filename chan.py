@@ -40,7 +40,8 @@ def chans_algorithm(points = [], plot = True):
     if len(pts) == 0:
         pts = random_points(100)
     n = len(pts)
-    m = int(math.sqrt(n))
+    m = 4
+    #m = int(math.sqrt(n))
     t = 1
     while True:
         m = min(m, n)
