@@ -49,6 +49,8 @@ class ExperimentalFramework:
                 graham_mean = sum(graham_times) / count if self.include_graham else None
                 jarvis_mean = sum(jarvis_times) / count if self.include_jarvis else None
                 self.results.append((n, h, chans_mean, graham_mean, jarvis_mean))
+                if n == h:
+                    break
 
     def plot_results(self):
         h_values_set = set(h for _, h, _, _, _ in self.results)
@@ -68,6 +70,8 @@ class ExperimentalFramework:
             plt.ylabel('Time (seconds)')
             plt.title(f'h = {h}')
             plt.legend()
+            if n_values[0] == h:
+                break
         plt.show()
 
     def plot_results_one_algorithm(self):
@@ -104,7 +108,9 @@ class ExperimentalFramework:
             print(row_format.format(*row))
     
 # framework = ExperimentalFramework(range(1000,10000,1000), [5], (0, 30000), (0, 30000)) # 3
-framework = ExperimentalFramework(range(10000,50001,5000), [3], (0, 32767), (0, 32767)) # 3
+n = range(1000,5000,1000)
+framework = ExperimentalFramework(n,n, (0, 32767), (0, 32767)) # 3
+# framework = ExperimentalFramework(range (10000, 26001,5000), [50], (0, 32767), (0, 32767)) # 3
 # framework = ExperimentalFramework([50], range(1000,10000,1000), (0, 30000), (0, 30000))
 # framework = ExperimentalFramework([1000], range(5, 51, 5), (0,30000), (0,30000))
 # framework = ExperimentalFramework([10000], range(3,35,1), (0,30000), (0,30000))
