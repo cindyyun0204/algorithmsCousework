@@ -6,15 +6,15 @@ from jarvis_march import jarvis_march
 from data_generation_convex_polygon import DataGeneration
 
 class ExperimentalFramework:
-    def __init__(self, n_range, h_range, x_range, y_range, c = True, g = True, j = True):
+    def __init__(self, n_range, h_range, x_range, y_range, chan = True, graham = True, jarvis = True):
         self.n_range = n_range
         self.h_range = h_range
         self.x_range = x_range
         self.y_range = y_range
         self.results = []
-        self.include_chans = c
-        self.include_graham = g
-        self.include_jarvis = j
+        self.include_chans = chan
+        self.include_graham = graham
+        self.include_jarvis = jarvis
 
     def time_algorithms(self, points):
         chans_time, graham_time, jarvis_time = None, None, None
@@ -68,7 +68,30 @@ class ExperimentalFramework:
             plt.ylabel('Time (seconds)')
             plt.title(f'h = {h}')
             plt.legend()
-        plt.show()    
+        plt.show()
+
+    def plot_results_one_algorithm(self):
+        h_values_set = sorted(set(h for _, h, _, _, _ in self.results))
+        plt.figure(figsize=(10, 6))
+        for h in h_values_set:
+            n_values, chans_times, graham_times, jarvis_times = zip(*[(n, ct, gt, jt) for n, h_val, ct, gt, jt in self.results if h_val == h])
+            if self.include_graham:
+                plt.plot(n_values, graham_times, label=str(h))
+                plt.scatter(n_values, graham_times, 5, color='black')
+                title = 'Graham Scan'
+            if self.include_chans:
+                plt.plot(n_values, chans_times, label=str(h))
+                plt.scatter(n_values, chans_times, 5, color='black')
+                title = 'Chan\'s Algorithm'
+            if self.include_jarvis:
+                plt.plot(n_values, jarvis_times, label=str(h))
+                plt.scatter(n_values, jarvis_times, 5, color='black')
+                title = 'Jarvis March'
+            plt.xlabel('Number of Points (n)')
+            plt.ylabel('Time (seconds)')
+            plt.title(title)
+            plt.legend()
+        plt.show()  
 
     def print_results(self):
         headers = ["n", "h", "Chan's Algorithm Time", "Graham Scan Time", "Jarvis March Time"]
@@ -80,7 +103,8 @@ class ExperimentalFramework:
         for row in data:
             print(row_format.format(*row))
     
-framework = ExperimentalFramework(range(1000,10000,1000), [50], (0, 30000), (0, 30000)) # 3
+# framework = ExperimentalFramework(range(1000,10000,1000), [5], (0, 30000), (0, 30000)) # 3
+framework = ExperimentalFramework(range(10000,50001,5000), [3], (0, 32767), (0, 32767)) # 3
 # framework = ExperimentalFramework([50], range(1000,10000,1000), (0, 30000), (0, 30000))
 # framework = ExperimentalFramework([1000], range(5, 51, 5), (0,30000), (0,30000))
 # framework = ExperimentalFramework([10000], range(3,35,1), (0,30000), (0,30000))
