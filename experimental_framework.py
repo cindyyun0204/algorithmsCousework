@@ -32,6 +32,25 @@ class ExperimentalFramework:
                 graham_mean = sum(graham_times) / count
                 jarvis_mean = sum(jarvis_times) / count
                 self.results.append((n, h, chans_mean, graham_mean, jarvis_mean))
+        self.plot_results()
+
+    def run_worst_case(self, count=1):
+        for n in self.n_range:
+            h = n
+            data_gen = DataGeneration(self.x_range, self.y_range)
+            hull = data_gen.generate_random_convex_polygon(h)
+            points = hull + data_gen.generate_points_inside_polygon(hull, n-h)
+            chans_times, graham_times, jarvis_times = [], [], []
+            for _ in range(count):
+                chans_time, graham_time, jarvis_time = self.time_algorithms(points)
+                chans_times.append(chans_time)
+                graham_times.append(graham_time)
+                jarvis_times.append(jarvis_time)
+            chans_mean = sum(chans_times) / count
+            graham_mean = sum(graham_times) / count
+            jarvis_mean = sum(jarvis_times) / count
+            self.results.append((n, h, chans_mean, graham_mean, jarvis_mean))
+        self.plot_worst_case()
 
     def time_algorithms(self, points):
         jarvis_time = timeit.timeit(lambda: jarvis_march(points, plot=False), number=1)
@@ -56,6 +75,23 @@ class ExperimentalFramework:
             plt.legend()
         plt.show()
 
+    def plot_worst_case(self):
+        x_values = [result[0] for result in self.results]
+        chans_times = [result[2] for result in self.results]
+        graham_times = [result[3] for result in self.results]
+        jarvis_times = [result[4] for result in self.results]
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(x_values, chans_times, label='Chan\'s Algorithm')
+        plt.plot(x_values, graham_times, label='Graham\'s Algorithm')
+        plt.plot(x_values, jarvis_times, label='Jarvis\'s Algorithm')
+        plt.xlabel('Number of Points (n)')
+        plt.ylabel('Time (seconds)')
+        plt.title('Worst Case Scenario')
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
     def print_results(self):
         headers = ["n", "h", "Chan's Algorithm Time", "Graham Scan Time", "Jarvis March Time"]
         data = self.results
@@ -65,6 +101,11 @@ class ExperimentalFramework:
         print(row_format.format(*headers))
         for row in data:
             print(row_format.format(*row))
+        
+        means = [sum(col) for col in zip(*data)]
+        print("\nMean values:")
+        for header, mean in zip(headers, means):
+            print(f"{header}: {mean}")
     
     # def plot_results(self):
     #     n_values, h_values, chans_times, graham_times, jarvis_times = zip(*self.results)
@@ -81,9 +122,8 @@ class ExperimentalFramework:
     #     plt.tight_layout()
     #     plt.show()
 
-framework = ExperimentalFramework([100000,200000,300000,400000,500000,1000000], [38], (0, 32767), (0, 32767))
+framework = ExperimentalFramework(range(10,500),[], (0, 32767), (0, 32767))
 # gonna change into range() eventually
 # n_range, h_range, x_range, y_range
-framework.run_experiment(count = 1)
-framework.plot_results()
-framework.print_results()
+framework.run_worst_case(count = 1)
+# framework.print_results()
