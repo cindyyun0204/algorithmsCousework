@@ -96,7 +96,7 @@ def chans_algorithm(points = [], plot = True):
         # print(m)
     return "incomplete"
 
-# hull = dgp.DataGeneration(100, 100).generate_random_convex_polygon(32)
-# points = hull + dgp.DataGeneration(100, 100).generate_points_inside_polygon(hull, 68)
-# print(chans_algorithm(points))
-# print(timeit.timeit(lambda: chans_algorithm(plot=False), number=1))
+hull = dgp.DataGeneration(100, 100).generate_random_convex_polygon(32)
+points = hull + dgp.DataGeneration(100, 100).generate_points_inside_polygon(hull, 68)
+print(chans_algorithm(points))
+print(timeit.timeit(lambda: chans_algorithm(plot=False), number=1))
